@@ -2,7 +2,7 @@ from conans import ConanFile, CMake
 import os
 
 channel = os.getenv("CONAN_CHANNEL", "stable")
-username = os.getenv("CONAN_USERNAME", "cinderblocks")
+username = os.getenv("CONAN_USERNAME", "slidewavellc")
 
 
 class ReuseConan(ConanFile):
