@@ -4,21 +4,21 @@ import os
 
 class XercesConan(ConanFile):
     name = "xerces-c"
-    version = "3.4.1"
+    version = "3.1.4"
     url = "https://github.com/slidewavellc/conan-xerces-c"
-    license = "APL"
     src_dir = "xerces-c"
+    license="http://www.apache.org/licenses/LICENSE-2.0.html"
     settings = {
-        "os": ["Windows"],
+        "os": ["Windows", "Linux"],
         "compiler": ["Visual Studio"],
         "build_type": ["Debug", "Release"],
         "arch": ["x86", "x86_64"]
     }
     options = {
         "with_icu": [True, False],
-        "static": [True, False]
+        "shared": [True, False]
     }
-    default_options = "with_icu=False", "static=False"
+    default_options = "with_icu=False", "shared=False"
     exports = "%s/*" % src_dir
 
 
@@ -47,9 +47,12 @@ class XercesConan(ConanFile):
 
 
     def package_info(self):
-        self.cpp_info.libs = [
-            "xerces-c_3"
-            ]
+        self.cpp_info.libdirs = ['lib']
+        self.cpp_info.includedirs = ['include']
+        if self.settings.os == "Windows":
+            self.cpp_info.libs = ["xerces-c_3"]
+        elif self.settings.os == "Linux":
+            self.cpp_info.libs = ["libxerces-c.a"] if not self.options.shared else ['libxerces-c.so']
 
 
     def build_with_vs(self):
@@ -77,7 +80,9 @@ class XercesConan(ConanFile):
     # *WARNING: untested!
     def build_with_make(self):
         env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
-        configure_command = 'cd %s && ./configure' % self.src_dir
-        self.run(configure_command)
-        self.run('cd %s && make')
+        self.run("cd %s && %s" % (self.src_dir, 'chmod u+x configure'))
+        self.run("cd %s/config && %s" % (self.src_dir, 'chmod u+x pretty-make'))
+        self.run("cd %s && %s %s" % (self.src_dir, env.command_line, './configure'))
+        self.run("cd %s && %s %s" % (self.src_dir, env.command_line, 'make'))
+
     

@@ -12,7 +12,7 @@ class ReuseConan(ConanFile):
         "build_type": ["Debug", "Release"],
         "arch": ["x86", "x86_64"]
     }
-    requires = "xerces-c/3.4.1@%s/%s" % (username, channel)
+    requires = "xerces-c/3.1.4@%s/%s" % (username, channel)
     generators = "cmake"
 
     def build(self):
